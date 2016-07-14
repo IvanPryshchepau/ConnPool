@@ -1,5 +1,7 @@
 package runner;
 
+import dao.ConnectionPool;
+
 /**
  * Created by ivanpryshchepau on 7/14/16.
  */
