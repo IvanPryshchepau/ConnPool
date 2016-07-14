@@ -13,6 +13,8 @@ public class PooledConnection implements Connection {
 
     private Connection connection;
 
+    private ConnectionPool connectionPool = ConnectionPool.getInstance();
+
     public PooledConnection(Connection connection) throws SQLException {
         this.connection = connection;
         this.connection.setAutoCommit(true);
@@ -61,12 +63,12 @@ public class PooledConnection implements Connection {
         if (connection.isReadOnly()) {
             connection.setReadOnly(false);
         }
-        /*if (!givenAwayConQueue.remove(this)) {
+        if (!connectionPool.givenAwayConQueue.remove(this)) {
             throw new SQLException("Error deleting connection from the given away connections pool");
         }
-        if (!connectionQueue.offer(this)) {
+        if (!connectionPool.connectionQueue.offer(this)) {
             throw new SQLException("Error allocating connection in the pool");
-        }*/
+        }
     }
 
     public boolean isClosed() throws SQLException {
