@@ -24,6 +24,8 @@ public class ConnectionPool {
     private String password;
     private int poolSize;
 
+    public static final ConnectionPool connectionPool = new ConnectionPool();
+
     private ConnectionPool() {
         DBResourceManager dbResourceManager = DBResourceManager.getInstance();
         this.driverName = dbResourceManager.getValue(DBParameter.DB_DRIVER);
@@ -35,7 +37,6 @@ public class ConnectionPool {
         } catch (NumberFormatException e) {
             poolSize = 5;
         }
-
     }
 
     public void initPoolData() throws ConnectionPoolException{
@@ -67,7 +68,7 @@ public class ConnectionPool {
     }
 
     public Connection takeConnection() throws ConnectionPoolException {
-        Connection connection = null;
+        Connection connection;
         try {
             connection = connectionQueue.take();
             givenAwayConQueue.put(connection);
@@ -77,11 +78,10 @@ public class ConnectionPool {
         return connection;
     }
 
-    public void returnConnection(Connection connection) throws ConnectionPoolException {
+    public void returnConnection(PooledConnection connection) throws ConnectionPoolException {
         try {
-            givenAwayConQueue.remove(connection);
-            connectionQueue.put(connection);
-        } catch (InterruptedException e) {
+            connection.close();
+        } catch (SQLException e) {
             throw new ConnectionPoolException("Error connecting to the data source", e);
         }
     }
